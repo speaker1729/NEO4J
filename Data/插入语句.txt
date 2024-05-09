@@ -1,0 +1,101 @@
+LOAD CSV WITH HEADERS FROM 'file:///Area.csv' AS row
+CREATE (a:Area { UUID: toInteger(toString(row.id) + '01'), name: row.Area,  count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///Province.csv' AS row
+CREATE (pro:Province {  UUID: toInteger(toString(row.id) + '02'), name: row.Province, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///City.csv' AS row
+CREATE (c:City {  UUID: toInteger(toString(row.id) + '03'), name: row.City, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///Location.csv' AS row
+CREATE (l:Location { UUID: toInteger(toString(row.id) + '04'), name: row.Location, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///Weather.csv' AS row
+CREATE (w:Weather { UUID: toInteger(toString(row.id) + '05'), name: row.Weather, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///Person.csv' AS row
+CREATE (per:Person { UUID: toInteger(toString(row.id) + '06'), name: row.Person, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///Time.csv' AS row
+CREATE (t:Time { UUID: toInteger(toString(row.id) + '07'), name: row.Time, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///Reason.csv' AS row
+CREATE (rea:Reason { UUID: toInteger(toString(row.id) + '08'), name: row.Reason, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///POI.csv' AS row
+CREATE (poi:POI { UUID: toInteger(toString(row.id) + '09'), name: row.POI, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///TripMode.csv' AS row
+CREATE (tm:TripMode { UUID: toInteger(toString(row.id) + '10'), name: row.TripMode, count: toInteger(row.count) })
+
+LOAD CSV WITH HEADERS FROM 'file:///AP_located_in.csv' AS row
+MATCH (a:Area {name: row.area})
+MATCH (pro:Province {name: row.province})
+MERGE (a)-[r:located_in {count: toInteger(row.count)} ]->(pro)
+RETURN a, r, pro
+
+LOAD CSV WITH HEADERS FROM 'file:///AC_located_in.csv' AS row
+MATCH (c:City {name: row.city})
+MATCH (a:Area {name: row.area})
+MERGE (a)-[r:located_in {count: toInteger(row.count)} ]->(c)
+RETURN a, r, c
+
+LOAD CSV WITH HEADERS FROM 'file:///CP_located_in.csv' AS row
+MATCH (c:City {name: row.city})
+MATCH (pro:Province {name: row.province})
+MERGE (c)-[r:located_in {count: toInteger(row.count)} ]->(pro)
+RETURN c, r, pro
+
+LOAD CSV WITH HEADERS FROM 'file:///LP_located_in.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (pro:Province {name: row.province})
+MERGE (l)-[r:located_in {count: toInteger(row.count)} ]->(pro)
+RETURN l, r, pro
+
+LOAD CSV WITH HEADERS FROM 'file:///LC_located_in.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (c:City {name: row.city})
+MERGE (l)-[r:located_in {count: toInteger(row.count)} ]->(c)
+RETURN l, r, c
+
+LOAD CSV WITH HEADERS FROM 'file:///LA_located_in.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (a:Area {name: row.area})
+MERGE (l)-[r:located_in {count: toInteger(row.count)} ]->(a)
+RETURN l, r, a
+
+LOAD CSV WITH HEADERS FROM 'file:///lost_weather.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (w:Weather {name: row.weather})
+MERGE (l)-[r:lost_weather {count: toInteger(row.count)} ]->(w)
+RETURN l, r, w
+
+LOAD CSV WITH HEADERS FROM 'file:///lost_time.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (t:Time {name: row.time})
+MERGE (l)-[r:lost_time {count: toInteger(row.count)} ]->(t)
+RETURN l, r, t
+
+LOAD CSV WITH HEADERS FROM 'file:///lost_reason.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (rea:Reason {name: row.reason})
+MERGE (l)-[r:lost_reason {count: toInteger(row.count)} ]->(rea)
+RETURN l, r, rea
+
+LOAD CSV WITH HEADERS FROM 'file:///lost_person.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (per:Person {name: row.person})
+MERGE (l)-[r:lost_person {count: toInteger(row.count)} ]->(per)
+RETURN l, r, per
+
+LOAD CSV WITH HEADERS FROM 'file:///lost_POI.csv' AS row
+MATCH (l:Location {name: row.location})
+MATCH (poi:POI {name: row.POI})
+MERGE (l)-[r:lost_POI {count: toInteger(row.count)} ]->(poi)
+RETURN l, r, poi
+
+LOAD CSV WITH HEADERS FROM 'file:///by.csv' AS row
+MATCH (per:Person {name: row.person})
+MATCH (tm:TripMode {name: row.tripmode})
+MERGE (per)-[r:by {count: toInteger(row.count)} ]->(tm)
+RETURN per, r, tm
